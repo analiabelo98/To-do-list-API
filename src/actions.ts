@@ -39,7 +39,6 @@ export const createTask = async (req: Request, res:Response): Promise<Response> 
 	// Verifica que el usuario exista
 	const user = await userRepo.findOne(req.params.userId)
     if(!user) throw new Exception("User does not exist");
-    //si el usuario existe, crea un objeto Task
     let task= new Task();
     task.name = req.body.name;
     task.user = user.id;

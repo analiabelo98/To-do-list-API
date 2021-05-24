@@ -1,7 +1,9 @@
 import {
   Entity, Column, PrimaryGeneratedColumn, ManyToMany, 
-  BaseEntity, JoinTable
+  BaseEntity, JoinTable, OneToMany
 } from 'typeorm';
+
+import {Task} from "./Task";
 
 @Entity()
 export class Users extends BaseEntity{
@@ -20,8 +22,7 @@ export class Users extends BaseEntity{
   @Column()
   password: string;
 
-  // @ManyToMany(() => Planet)
-  // @JoinTable()
-  // planets: Planet[];
+@OneToMany(() => Task, tasks => tasks.user)
+tasks: Task[];
   
 }

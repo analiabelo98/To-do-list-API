@@ -19,5 +19,9 @@ import * as actions from './actions';
 const router = Router();
 
 router.get('/user', safe(actions.getUsers));
+router.get('/todos/user/:userId', safe(actions.getTask));
+router.post('/todos/user/:userId', safe(actions.createTask));
+router.put('/todos/user/:userId', safe(actions.putTask));
+router.delete('/user/:userId', safe(actions.deleteTaskAndUser));
 
 export default router;

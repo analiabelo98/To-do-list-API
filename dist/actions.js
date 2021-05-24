@@ -36,10 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getUsers = exports.createUser = void 0;
+exports.deleteTaskAndUser = exports.putTask = exports.getTask = exports.createTask = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var utils_1 = require("./utils");
+var Task_1 = require("./entities/Task");
 var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, newUser, results;
     return __generator(this, function (_a) {
@@ -81,3 +82,86 @@ var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
     });
 }); };
 exports.getUsers = getUsers;
+//CREAR TAREAS
+var createTask = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userRepo, user, task, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
+                if (!req.body.name)
+                    throw new utils_1.Exception("Please provide a name");
+                userRepo = typeorm_1.getRepository(Users_1.Users);
+                return [4 /*yield*/, userRepo.findOne(req.params.userId)];
+            case 1:
+                user = _a.sent();
+                if (!user)
+                    throw new utils_1.Exception("User does not exist");
+                task = new Task_1.Task();
+                task.name = req.body.name;
+                task.user = user.id;
+                return [4 /*yield*/, typeorm_1.getRepository(Task_1.Task).save(task)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.createTask = createTask;
+var getTask = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var taskRepo, task;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                taskRepo = typeorm_1.getRepository(Task_1.Task);
+                return [4 /*yield*/, taskRepo.find({ where: { user: req.params.userId } })];
+            case 1:
+                task = _a.sent();
+                return [2 /*return*/, res.json(task)];
+        }
+    });
+}); };
+exports.getTask = getTask;
+//MODIFICAR TAREAS
+var putTask = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var taskRepo, task, todo;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                taskRepo = typeorm_1.getRepository(Task_1.Task);
+                task = parseInt(req.params.userId);
+                return [4 /*yield*/, taskRepo["delete"]({ user: task })];
+            case 1:
+                todo = _a.sent();
+                if (todo.affected)
+                    return [2 /*return*/, res.json({ "message": "Task has been deleted" })];
+                else
+                    return [2 /*return*/, res.json({ "message": "task has not been deleted" })];
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.putTask = putTask;
+var deleteTaskAndUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var taskRepo, id, todo, usersRepo, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                taskRepo = typeorm_1.getRepository(Task_1.Task);
+                id = parseInt(req.params.userId);
+                return [4 /*yield*/, taskRepo["delete"]({ user: id })];
+            case 1:
+                todo = _a.sent();
+                usersRepo = typeorm_1.getRepository(Users_1.Users);
+                return [4 /*yield*/, usersRepo["delete"](id)];
+            case 2:
+                user = _a.sent();
+                if (todo.affected || user.affected)
+                    return [2 /*return*/, res.json({ "message": "User has been deleted" })];
+                else
+                    return [2 /*return*/, res.json({ "message": "User has been not deleted" })];
+                return [2 /*return*/];
+        }
+    });
+}); };
+exports.deleteTaskAndUser = deleteTaskAndUser;
